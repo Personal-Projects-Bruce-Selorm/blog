@@ -22,7 +22,7 @@ const db_name = DB_NAME;
  */
 db.collection = function (name, callback) {
     //validate collection name 
-    var collectionName = typeof name == 'string' && name.trim().length > 0 && ['insertOne', 'insertMany', 'findOne', 'find', 'pdateOne', 'updateMany', 'deleteOne', 'deleteMay'].indexOf(name) > -1 ? name : false;
+    var collectionName = typeof name == 'string' && name.trim().length > 0 ? name : false;
 
     if (collectionName) {
 
@@ -42,27 +42,34 @@ db.collection = function (name, callback) {
  */
 
 db.main = function (data, colection_name, collection_verb) {
-    db.collection(colection_name, function (collection) {
-        if (collection) {
 
-            const send = async () => {
-                try {
+    var verb = typeof collection_verb == 'string' && ['insertOne', 'insertMany', 'findOne', 'find', 'pdateOne', 'updateMany', 'deleteOne', 'deleteMany'].indexOf(collection_verb) > -1 ? collection_verb.trim() : false;
+    if (verb) {
+        db.collection(colection_name, function (collection) {
+            if (collection) {
 
-                    await collection[collection_verb](data)
-                    console.log('successful')
+                const send = async () => {
+                    try {
+                        await cleint.connect();
+                        await collection[collection_verb](data)
+                        console.log('successful')
 
-                } catch (err) {
-                    console.error(err)
-                } finally {
-                    await cleint.close();
+                    } catch (err) {
+                        console.error(err)
+                    } finally {
+                        await cleint.close();
+                    }
                 }
-            }
-            send()
+                send()
 
-        } else {
-            console.log({ error: "collection name does not meet requirement" })
-        }
-    })
+            } else {
+                console.log({ error: "collection name does not meet requirement" })
+            }
+        })
+    }else{
+        console.log('invalid verb provided')
+    }
+
 
 }
 
