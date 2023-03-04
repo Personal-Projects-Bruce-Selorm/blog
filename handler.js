@@ -66,7 +66,7 @@ handler.post = function (data, res) {
 
         // push data to db
 
-        db.main(payload, 'posts', 'insertOne');
+        db.send(payload,  'insertOne');
         res.status(200).send({ success: "record created" })
 
 

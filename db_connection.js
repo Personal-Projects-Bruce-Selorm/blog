@@ -5,68 +5,59 @@
 //depeendencies
 const { MongoClient } = require('mongodb')
 require('dotenv').config()
-const { DB_CONNEECTION, DB_NAME } = process.env;
+const { CONNEECTION_STRING, DB_NAME, COLLECTION_NAME, INDEX_NAME } = process.env;
+const util = require('./utils')
+
 
 // db container 
 var db = {};
 
 //db setup
 
-const cleint = new MongoClient(DB_CONNEECTION)
+const cleint = new MongoClient(CONNEECTION_STRING)
 const db_name = DB_NAME;
+const collection_name = COLLECTION_NAME;
+const index_name = INDEX_NAME
 
-//get collection instance with name
 
-/**
- * @param name
- */
-db.collection = function (name, callback) {
-    //validate collection name 
-    var collectionName = typeof name == 'string' && name.trim().length > 0 ? name : false;
 
-    if (collectionName) {
+//connect to Atlas Cluster
+const connectToAtlasCluster = async () => {
+    try {
+        await cleint.connect();
+        console.log('connected to atlas')
+    } catch (err) {
+        console.log(err)
 
-        var value = cleint.db(db_name).collection(collectionName);
-
-        callback(value)
-    } else {
-        callback(false)
     }
 }
 
 
+util.createIndex(db_name, collection_name, index_name,cleint);
+
 /**
  * @param data
- * @param colection_name
  * @param collection_verb
  */
 
-db.main = function (data, colection_name, collection_verb) {
+db.send = function (data, collection_verb) {
 
-    var verb = typeof collection_verb == 'string' && ['insertOne', 'insertMany', 'findOne', 'find', 'pdateOne', 'updateMany', 'deleteOne', 'deleteMany'].indexOf(collection_verb) > -1 ? collection_verb.trim() : false;
+    var verb = typeof collection_verb == 'string' && ['insertOne', 'insertMany', 'findOne', 'find', 'updateOne', 'updateMany', 'deleteOne', 'deleteMany'].indexOf(collection_verb) > -1 ? collection_verb.trim() : false;
     if (verb) {
-        db.collection(colection_name, function (collection) {
-            if (collection) {
+        const send = async () => {
+            try {
+                await connectToAtlasCluster();
+                await cleint.db(db_name).collection(collection_name)[collection_verb](data)
+                console.log('successful')
 
-                const send = async () => {
-                    try {
-                        await cleint.connect();
-                        await collection[collection_verb](data)
-                        console.log('successful')
-
-                    } catch (err) {
-                        console.error(err)
-                    } finally {
-                        await cleint.close();
-                    }
-                }
-                send()
-
-            } else {
-                console.log({ error: "collection name does not meet requirement" })
+            } catch (err) {
+                console.error(err)
+            } finally {
+                await cleint.close();
             }
-        })
-    }else{
+        }
+        send()
+    } else {
         console.log('invalid verb provided')
     }
 
