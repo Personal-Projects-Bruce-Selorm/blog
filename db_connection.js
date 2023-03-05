@@ -43,18 +43,20 @@ util.checkIfIndexExist(db_name, collection_name, index_name, cleint, function (i
  */
 
 db.send = function (data, collection_verb, callback) {
+    console.log()
 
     var verb = typeof collection_verb == 'string' && ['insertOne', 'insertMany', 'findOne', 'find', 'updateOne', 'updateMany', 'deleteOne', 'deleteMany'].indexOf(collection_verb) > -1 ? collection_verb.trim() : false;
+    console.log(verb,data)
     if (verb) {
         const send = async () => {
             try {
                 await connectToAtlasCluster();
-                await cleint.db(db_name).collection(collection_name)[collection_verb](data)
+               var promise = await cleint.db(db_name).collection(collection_name)[collection_verb](data)
                 console.log('successful')
-                callback(true)
+                callback(true,  promise)
             } catch (err) {
                 console.error(err)
-                callback(false)
+                callback(false,promise)
             } finally {
                 await cleint.close();
             }

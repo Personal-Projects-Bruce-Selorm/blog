@@ -17,7 +17,7 @@ const app = express();
 app.set('view engine', 'ejs');
 app.set('views', path.resolve(__dirname, 'views'))
 
-app.use('/blog', handler)
+app.use('/blog/', handler)
 
 //start server
 app.listen(PORT, () => { console.log(`server is up and listening on port ${PORT}`) })
