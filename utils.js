@@ -97,7 +97,7 @@ util.createIndex = async (db_name,collection_name,index_name,cleint) => {
 util.queryGenerator = async function (cleint, db_name, collection_name, collection_verb, data) {
    
     try {
-        if (['insertOne', 'inserMany'].indexOf(collection_verb) > -1) {
+        if (['insertOne', 'insertMany'].indexOf(collection_verb) > -1) {
            return await cleint.db(db_name).collection(collection_name)[collection_verb](data)
         }
 

@@ -52,10 +52,10 @@ handler.post = function (req, res, next) {
     var body = typeof req.body.body == 'string' && req.body.body.trim().length > 0 ? req.body.body.trim() : false;
     if (title && author && body) {
 
-        if (data.featured_image_url) {
+        if (req.body.featured_image_url) {
             var featured_image_url = typeof req.body.featured_image_url == 'string' && req.body.featured_image_url.trim().length > 0 ? req.body.featured_image_url.trim() : '';
         }
-        if (data.published) {
+        if (req.body.published) {
             var published = typeof req.body.published == 'boolean' && req.body.published == true ? req.body.published : false;
         }
         // form post body
@@ -72,7 +72,7 @@ handler.post = function (req, res, next) {
         // push data to db
 
         db.send(payload, 'insertOne', function (bool, promise) {
-            if (bool) {
+            if (bool && promise.acknowledged == true) {
                 console.log(promise)
                 res.status(200).send({ success: "record created" })
             } else {
