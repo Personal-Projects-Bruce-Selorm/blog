@@ -66,8 +66,15 @@ handler.post = function (data, res) {
 
         // push data to db
 
-        db.send(payload,  'insertOne');
-        res.status(200).send({ success: "record created" })
+        db.send(payload,  'insertOne',function(bool){
+            if(bool){
+                res.status(200).send({ success: "record created" })
+            }else{
+                console.log("could not process db query")
+            }
+
+        });
+   
 
 
     } else {

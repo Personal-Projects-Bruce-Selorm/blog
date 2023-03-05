@@ -33,14 +33,16 @@ const connectToAtlasCluster = async () => {
 }
 
 
-util.createIndex(db_name, collection_name, index_name,cleint);
+util.checkIfIndexExist(db_name, collection_name, index_name, cleint, function (indexExistStatus) {
+    console.log(indexExistStatus)
+});
 
 /**
  * @param data
  * @param collection_verb
  */
 
-db.send = function (data, collection_verb) {
+db.send = function (data, collection_verb, callback) {
 
     var verb = typeof collection_verb == 'string' && ['insertOne', 'insertMany', 'findOne', 'find', 'updateOne', 'updateMany', 'deleteOne', 'deleteMany'].indexOf(collection_verb) > -1 ? collection_verb.trim() : false;
     if (verb) {
@@ -49,14 +51,16 @@ db.send = function (data, collection_verb) {
                 await connectToAtlasCluster();
                 await cleint.db(db_name).collection(collection_name)[collection_verb](data)
                 console.log('successful')
-
+                callback(true)
             } catch (err) {
                 console.error(err)
+                callback(false)
             } finally {
                 await cleint.close();
             }
         }
         send()
+
     } else {
         console.log('invalid verb provided')
     }

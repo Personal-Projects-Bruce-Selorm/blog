@@ -15,12 +15,12 @@ var filePath = path.join(__dirname + '/index.json');
 
 
 //create file if it does not eexist and wrute into it
-util.createIndex = function(db_name,collection_name,index_name){
+util.checkIfIndexExist = function(db_name,collection_name,index_name,client,callback){
     fs.readFile(filePath, 'utf-8', function (err, content) {
         if (!err && content.length > 0) {
             var content = JSON.parse(content);
             if (content.indexExists == true) {
-                util.createIndex(db_name,collection_name,index_name,client);
+              callback(true);
             }
     
         } else {
@@ -30,6 +30,7 @@ util.createIndex = function(db_name,collection_name,index_name){
                         if (!err) {
                             util.createIndex(db_name,collection_name,index_name,client);
                             console.log("index status writen to false")
+                            callback(false)
     
                         } else {
                             console.log("could not write to file ", err);
@@ -47,7 +48,7 @@ util.createIndex = function(db_name,collection_name,index_name){
 //check if collection exist before creating index
 util.createIndex = async (db_name,collection_name,index_name,cleint) => {
     try {
-        console.log({ "collection": collection_name }, { "dbName": db_name })
+      
         var result = await cleint.db(db_name).listCollections({ name: collection_name }).toArray();
 
 
@@ -90,6 +91,7 @@ util.createIndex = async (db_name,collection_name,index_name,cleint) => {
 
     }
 }
+
 
 
 module.exports =util;
