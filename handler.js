@@ -121,30 +121,34 @@ handler.get = function (req, res, next) {
         if (searchKey === 'id') {
             searchObject = {
                 _id: new ObjectId(value)
-
             }
-
         } else {
-            searchObject = {
+            searchObject =
+            {
                 title: value
-
-
             }
+
+
         }
 
-
         db.send(searchObject, collectionVerb, function (bool, promise) {
-            console.log(promise)
-            res.status(200).send(promise)
+            if(bool){
+                  res.status(200).send(promise)
+            }else{
+                res.status(400).send('something happend')
+            }
+          
         })
 
 
     }
 }
 
+
 handler.use(function (req, res) {
     res.status(404).send("Sorry, can't find that!");
 });
+
 
 
 module.exports = handler;

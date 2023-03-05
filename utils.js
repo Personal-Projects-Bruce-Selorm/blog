@@ -94,4 +94,35 @@ util.createIndex = async (db_name,collection_name,index_name,cleint) => {
 
 
 
+util.queryGenerator = async function (cleint, db_name, collection_name, collection_verb, data) {
+   
+    try {
+        if (['insertOne', 'inserMany'].indexOf(collection_verb) > -1) {
+           return await cleint.db(db_name).collection(collection_name)[collection_verb](data)
+        }
+
+        if (['findOne', 'find'].indexOf(collection_verb) > -1) {
+            if ('findOne' === collection_verb) {
+              return  await cleint.db(db_name).collection(collection_name)[collection_verb](data)
+            } else {
+              return await cleint.db(db_name).collection(collection_name)[collection_verb](data).toArray()
+                
+            }
+        }
+
+        if (['updateOne', 'updateMany',].indexOf(collection_verb) > -1) {
+
+        }
+
+        if (['deleteOne', 'deleteMany',].indexOf(collection_verb) > -1) {
+
+        }
+
+    } catch (err) {
+        console.error(err)
+    }
+
+}
+
+
 module.exports =util;

@@ -3,10 +3,11 @@
  */
 
 //depeendencies
-const { MongoClient } = require('mongodb')
+const { MongoClient } = require('mongodb');
 require('dotenv').config()
 const { CONNEECTION_STRING, DB_NAME, COLLECTION_NAME, INDEX_NAME } = process.env;
 const util = require('./utils')
+
 
 
 // db container 
@@ -43,17 +44,18 @@ util.checkIfIndexExist(db_name, collection_name, index_name, cleint, function (i
  */
 
 db.send = function (data, collection_verb, callback) {
-    console.log()
+   
 
-    var verb = typeof collection_verb == 'string' && ['insertOne', 'insertMany', 'findOne', 'find', 'updateOne', 'updateMany', 'deleteOne', 'deleteMany'].indexOf(collection_verb) > -1 ? collection_verb.trim() : false;
+    var verb = typeof collection_verb == 'string' && ['insertOne', 'insertMany', 'findOne', 'find', 'updateOne', 'updateMany', 'deleteOne', 'deleteMany','aggregate'].indexOf(collection_verb) > -1 ? collection_verb.trim() : false;
+   
     console.log(verb,data)
     if (verb) {
         const send = async () => {
             try {
                 await connectToAtlasCluster();
-               var promise = await cleint.db(db_name).collection(collection_name)[collection_verb](data)
+               var promise =   util.queryGenerator(cleint, db_name, collection_name, collection_verb, data);
                 console.log('successful')
-                callback(true,  promise)
+                callback(true,   await promise)
             } catch (err) {
                 console.error(err)
                 callback(false,promise)
