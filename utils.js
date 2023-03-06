@@ -5,6 +5,9 @@
 //dependencies 
 const fs = require('fs')
 const path = require('path')
+const crypto = require('crypto')
+require('dotenv').config()
+const { SECRET } = process.env;
 
 
 
@@ -93,7 +96,7 @@ util.createIndex = async (db_name, collection_name, index_name, cleint) => {
     }
 }
 
-
+//generate db query with parameters 
 
 util.queryGenerator = async function (cleint, db_name, collection_name, collection_verb, data) {
 
@@ -134,6 +137,25 @@ util.queryGenerator = async function (cleint, db_name, collection_name, collecti
         console.error(err)
     }
 
+}
+
+
+util.hashPassword = function (password, callback) {
+    //validate password 
+    var password = typeof password == 'string' && password.trim().length >= 8 ? password.trim() : false;
+    if (password) {
+        try {
+            var hashedPassword = crypto.createHmac('sha256', SECRET).update(password).digest('hex')
+            callback(hashedPassword)
+
+        } catch (err) {
+            callback(false)
+
+        }
+
+    } else {
+        callback(false)
+    }
 }
 
 

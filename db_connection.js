@@ -43,7 +43,7 @@ util.checkIfIndexExist(db_name, collection_name, index_name, cleint, function (i
  * @param collection_verb
  */
 
-db.send = function (data, collection_verb, callback) {
+db.send = function (data, collection_name,collection_verb, callback) {
    
 
     var verb = typeof collection_verb == 'string' && ['insertOne', 'insertMany', 'findOne', 'find', 'updateOne', 'updateMany', 'deleteOne', 'deleteMany','aggregate'].indexOf(collection_verb) > -1 ? collection_verb.trim() : false;

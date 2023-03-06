@@ -22,6 +22,7 @@ var allowedMethods = ['get', 'post', 'put', 'delete']
 
 handler.use(bodyParser.json());
 
+const collection_name  ="posts"
 
 //rejeect any method  that is not allowed
 handler.use(function (req, res, next) {
@@ -73,7 +74,7 @@ handler.post = function (req, res, next) {
 
         // push data to db
 
-        db.send(payload, 'insertOne', function (bool, promise) {
+        db.send(payload, collection_name,'insertOne', function (bool, promise) {
             if (bool && promise.acknowledged == true) {
                 console.log(promise)
                 res.status(200).send({ success: "record created" })
@@ -131,7 +132,7 @@ handler.get = function (req, res, next) {
 
         }
 
-        db.send(searchObject, collectionVerb, function (bool, promise) {
+        db.send(searchObject,collection_name, collectionVerb, function (bool, promise) {
             if (bool && promise) {
                 res.status(200).send(promise)
             } else {
@@ -190,7 +191,7 @@ handler.put = function (req, res, next) {
 
             ]
 
-            db.send(updateObject, 'updateOne', function (bool, promise) {
+            db.send(updateObject, collection_name,'updateOne', function (bool, promise) {
                 if (bool && promise.acknowledged == true) {
                     console.log(promise)
                     res.status(200).send('record updated')
@@ -224,7 +225,7 @@ handler.delete = function (req, res, next) {
     if (id) {
         var deleteObject = { _id: new ObjectId(id) }
 
-        db.send(deleteObject, 'deleteOne', function (bool, promise) {
+        db.send(deleteObject,collection_name, 'deleteOne', function (bool, promise) {
             if (bool && promise.deletedCount == 1) {
                 console.log(promise)
                 res.status(200).send("record deleted successfully")

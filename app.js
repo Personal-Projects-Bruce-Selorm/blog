@@ -8,6 +8,7 @@ require('dotenv').config()
 const { PORT } = process.env;
 const path = require('path')
 const handler = require('./handler')
+const session = require('./session')
 
 //App container 
 const app = express();
@@ -17,6 +18,8 @@ const app = express();
 app.set('view engine', 'ejs');
 app.set('views', path.resolve(__dirname, 'views'))
 
+// routes
+app.use('/session/', session)
 app.use('/blog/', handler)
 
 //start server
