@@ -48,7 +48,7 @@ db.send = function (data, collection_verb, callback) {
 
     var verb = typeof collection_verb == 'string' && ['insertOne', 'insertMany', 'findOne', 'find', 'updateOne', 'updateMany', 'deleteOne', 'deleteMany','aggregate'].indexOf(collection_verb) > -1 ? collection_verb.trim() : false;
    
-    console.log(verb,data)
+   
     if (verb) {
         const send = async () => {
             try {

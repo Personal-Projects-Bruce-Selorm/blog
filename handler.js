@@ -132,16 +132,83 @@ handler.get = function (req, res, next) {
         }
 
         db.send(searchObject, collectionVerb, function (bool, promise) {
-            if(bool){
-                  res.status(200).send(promise)
-            }else{
+            if (bool) {
+                res.status(200).send(promise)
+            } else {
                 res.status(400).send('something happend')
             }
-          
+
         })
 
 
     }
+}
+
+
+/**
+ * update
+ * @param id
+ * required fields _id
+ * optional  title,body,featured_image_url,published,author
+ */
+handler.put = function (req, res, next) {
+    var id = typeof req.query.id == 'string' && req.query.id.trim().length > 0 ? req.query.id.trim() : false;
+    // optional fields
+    var title = typeof req.body.title == 'string' && req.body.title.trim().length > 0 ? req.body.title.trim() : false;
+    var author = typeof req.body.author == 'string' && req.body.author.trim().length > 0 ? req.body.author.trim() : false;
+    var body = typeof req.body.body == 'string' && req.body.body.trim().length > 0 ? req.body.body.trim() : false;
+    var featured_image_url = typeof req.body.featured_image_url == 'string' && req.body.featured_image_url.trim().length > 0 ? req.body.featured_image_url.trim() : false;
+    var published = typeof req.body.published == 'boolean' && req.body.published == true ? req.body.published : false;
+    if (id) {
+        if (title || author || body || featured_image_url || published) {
+            var data = {};
+
+
+            if (title) {
+                data.title = title
+            }
+
+            if (author) {
+                data.author = author
+            }
+
+            if (body) {
+                data.body = body
+            }
+
+            if (featured_image_url) {
+                data.featured_image_url = featured_image_url
+            }
+
+            if (published) {
+                data.title = published
+            }
+
+            updateOpject = [
+                { _id: new ObjectId(id) },
+                { $set: data }
+
+            ]
+
+            db.send(updateOpject, 'updateOne', function (bool, promise) {
+                if (bool) {
+                    console.log(promise)
+                    res.status(200).send(promise)
+                } else {
+                    res.status(400).send('something happend')
+                }
+
+            })
+
+
+        } else {
+            res.status(403).send('one or more fileds are required ')
+        }
+
+    } else {
+        res.status(403).send('a valid id is required to update a file')
+    }
+
 }
 
 

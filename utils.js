@@ -8,30 +8,31 @@ const path = require('path')
 
 
 
-const util  = {};
+
+const util = {};
 
 //create index if it does not exist
 var filePath = path.join(__dirname + '/index.json');
 
 
 //create file if it does not eexist and wrute into it
-util.checkIfIndexExist = function(db_name,collection_name,index_name,client,callback){
+util.checkIfIndexExist = function (db_name, collection_name, index_name, client, callback) {
     fs.readFile(filePath, 'utf-8', function (err, content) {
         if (!err && content.length > 0) {
             var content = JSON.parse(content);
             if (content.indexExists == true) {
-              callback(true);
+                callback(true);
             }
-    
+
         } else {
             fs.open(filePath, 'wx', function (err, filedescriptor) {
                 if (!err && filedescriptor) {
                     fs.writeFile(filedescriptor, JSON.stringify({ indexExists: false }), function (err) {
                         if (!err) {
-                            util.createIndex(db_name,collection_name,index_name,client);
+                            util.createIndex(db_name, collection_name, index_name, client);
                             console.log("index status writen to false")
                             callback(false)
-    
+
                         } else {
                             console.log("could not write to file ", err);
                         }
@@ -46,9 +47,9 @@ util.checkIfIndexExist = function(db_name,collection_name,index_name,client,call
 
 
 //check if collection exist before creating index
-util.createIndex = async (db_name,collection_name,index_name,cleint) => {
+util.createIndex = async (db_name, collection_name, index_name, cleint) => {
     try {
-      
+
         var result = await cleint.db(db_name).listCollections({ name: collection_name }).toArray();
 
 
@@ -95,22 +96,31 @@ util.createIndex = async (db_name,collection_name,index_name,cleint) => {
 
 
 util.queryGenerator = async function (cleint, db_name, collection_name, collection_verb, data) {
-   
+
     try {
         if (['insertOne', 'insertMany'].indexOf(collection_verb) > -1) {
-           return await cleint.db(db_name).collection(collection_name)[collection_verb](data)
+            return await cleint.db(db_name).collection(collection_name)[collection_verb](data)
         }
 
         if (['findOne', 'find'].indexOf(collection_verb) > -1) {
             if ('findOne' === collection_verb) {
-              return  await cleint.db(db_name).collection(collection_name)[collection_verb](data)
+                return await cleint.db(db_name).collection(collection_name)[collection_verb](data)
             } else {
-              return await cleint.db(db_name).collection(collection_name)[collection_verb](data).toArray()
-                
+                return await cleint.db(db_name).collection(collection_name)[collection_verb](data).toArray()
+
             }
         }
 
         if (['updateOne', 'updateMany',].indexOf(collection_verb) > -1) {
+            if (collection_verb === 'updateOne') {
+                return await cleint.db(db_name).collection(collection_name)[collection_verb](data[0],data[1])
+
+            } else {
+                collection_verb = 'insertMany';
+                return await cleint.db(db_name).collection(collection_name)[collection_verb](data)
+
+
+            }
 
         }
 
@@ -125,4 +135,4 @@ util.queryGenerator = async function (cleint, db_name, collection_name, collecti
 }
 
 
-module.exports =util;
+module.exports = util;
