@@ -113,7 +113,7 @@ util.queryGenerator = async function (cleint, db_name, collection_name, collecti
 
         if (['updateOne', 'updateMany',].indexOf(collection_verb) > -1) {
             if (collection_verb === 'updateOne') {
-                return await cleint.db(db_name).collection(collection_name)[collection_verb](data[0],data[1])
+                return await cleint.db(db_name).collection(collection_name)[collection_verb](data[0], data[1])
 
             } else {
                 collection_verb = 'insertMany';
@@ -125,6 +125,8 @@ util.queryGenerator = async function (cleint, db_name, collection_name, collecti
         }
 
         if (['deleteOne', 'deleteMany',].indexOf(collection_verb) > -1) {
+            console.log('hello world')
+            return await cleint.db(db_name).collection(collection_name)[collection_verb](data)
 
         }
 

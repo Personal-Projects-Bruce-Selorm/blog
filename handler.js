@@ -10,7 +10,9 @@ const bodyParser = require('body-parser');
 const { ObjectId } = require('mongodb')
 
 
-
+/**
+* @todo  refactor handler  to allow only authenticated users to  edit,update or delete thier posts
+*/
 
 
 // routes contaianr
@@ -99,9 +101,7 @@ handler.post = function (req, res, next) {
  * required fileds: search query 
  */
 handler.get = function (req, res, next) {
-    /**
- * @todo  refactor handler object to handle each veerb differently
-*/
+
     // determine the search key
     if (Object.keys(req.query).length > 0) {
         var key = Object.keys(req.query)[0]
@@ -132,10 +132,10 @@ handler.get = function (req, res, next) {
         }
 
         db.send(searchObject, collectionVerb, function (bool, promise) {
-            if (bool) {
+            if (bool && promise) {
                 res.status(200).send(promise)
             } else {
-                res.status(400).send('something happend')
+                res.status(400).send('record may not exist')
             }
 
         })
@@ -184,16 +184,16 @@ handler.put = function (req, res, next) {
                 data.title = published
             }
 
-            updateOpject = [
+            updateObject = [
                 { _id: new ObjectId(id) },
                 { $set: data }
 
             ]
 
-            db.send(updateOpject, 'updateOne', function (bool, promise) {
-                if (bool) {
+            db.send(updateObject, 'updateOne', function (bool, promise) {
+                if (bool && promise.acknowledged == true) {
                     console.log(promise)
-                    res.status(200).send(promise)
+                    res.status(200).send('record updated')
                 } else {
                     res.status(400).send('something happend')
                 }
@@ -212,6 +212,37 @@ handler.put = function (req, res, next) {
 }
 
 
+/**
+ * delete  required field = id
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
+
+handler.delete = function (req, res, next) {
+    var id = typeof req.query.id == 'string' && req.query.id.trim().length > 0 ? req.query.id.trim() : false;
+    if (id) {
+        var deleteObject = { _id: new ObjectId(id) }
+
+        db.send(deleteObject, 'deleteOne', function (bool, promise) {
+            if (bool && promise.deletedCount == 1) {
+                console.log(promise)
+                res.status(200).send("record deleted successfully")
+            } else {
+                res.status(400).send('something happend')
+            }
+
+        })
+
+
+    } else {
+        res.status(401).send("valid post id is required to delete a post")
+    }
+
+
+}
+
+
 handler.use(function (req, res) {
     res.status(404).send("Sorry, can't find that!");
 });
@@ -220,23 +251,3 @@ handler.use(function (req, res) {
 
 module.exports = handler;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-module.exports = handler
