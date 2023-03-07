@@ -21,7 +21,7 @@ app.set('views', path.resolve(__dirname, 'public/views'))
 // routes
 app.use('/session/', session)
 app.use('/blog/', handler)
-app.use('/token', token)
+
 
 //start server
 app.listen(PORT, () => { console.log(`server is up and listening on port ${PORT}`) })
