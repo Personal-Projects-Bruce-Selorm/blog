@@ -6,7 +6,7 @@
 const { MongoClient } = require('mongodb');
 require('dotenv').config()
 const { CONNEECTION_STRING, DB_NAME, COLLECTION_NAME, INDEX_NAME } = process.env;
-const util = require('./utils')
+const util = require('../lib/utils')
 
 
 
