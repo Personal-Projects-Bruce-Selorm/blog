@@ -47,7 +47,7 @@ session.use(function (req, res, next) {
 
 
 session.post = function (req, res, next) {
-    console.log(req.body)
+
     //validate fields
     var name = typeof req.body.name == 'string' && req.body.name.trim().length > 0 ? req.body.name.trim() : false;
     var phone = typeof req.body.phone == 'string' && req.body.phone.trim().length == 10 ? req.body.phone.trim() : false;
@@ -66,10 +66,13 @@ session.post = function (req, res, next) {
                 }
                 db.send(user, collection_name, "insertOne", function (bool, promise) {
                     if (bool && promise) {
-                        console.log(promise)
+
                         res.status(200).send("user created successfully")
                     } else {
-                        res.status(400).send('something happend')
+
+                        res.status(400).send('sorry, user with same phone number exist')
+
+
                     }
 
                 })
@@ -185,7 +188,7 @@ session.delete = function (req, res, next) {
     if (id) {
         var deleteObject = { _id: new ObjectId(id) }
 
-        db.send(deleteObject,collection_name, 'deleteOne', function (bool, promise) {
+        db.send(deleteObject, collection_name, 'deleteOne', function (bool, promise) {
             if (bool && promise.deletedCount == 1) {
                 console.log(promise)
                 res.status(200).send("record deleted successfully")

@@ -20,11 +20,15 @@ var filePath = path.join(__dirname + '/index.json');
 
 //create file if it does not eexist and wrute into it
 util.checkIfIndexExist = function (db_name, collection_name, index_name, client, callback) {
+    console.log("checking and creating index")
     fs.readFile(filePath, 'utf-8', function (err, content) {
         if (!err && content.length > 0) {
             var content = JSON.parse(content);
             if (content.indexExists == true) {
                 callback(true);
+            } else {
+                util.createIndex(db_name, collection_name, index_name, client);
+                callback(false)
             }
 
         } else {
@@ -78,7 +82,7 @@ util.createIndex = async (db_name, collection_name, index_name, cleint) => {
             console.log('collection created')
 
             //create index
-            await cleint.db(db_name).collection(collection_name).createIndex({ title: 1 }, { unique: true })
+            await cleint.db(db_name).collection(collection_name).createIndex({ phone: 1 }, { unique: true })
             console.log('index created')
             fs.writeFile(filePath, JSON.stringify({ indexExists: true }), function (err) {
                 if (!err) {
@@ -156,6 +160,17 @@ util.hashPassword = function (password, callback) {
     } else {
         callback(false)
     }
+}
+util.generateToken = function (count) {
+    var characterPool = 'abcdefghijklmnopqrstuvwxyz1234567890'
+    var token = '';
+    for (var i = 0; i < count; i++) {
+        //get a random character
+        token += characterPool.charAt(Math.round(Math.random() * characterPool.length));
+
+    }
+    return token;
+
 }
 
 

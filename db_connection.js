@@ -57,8 +57,8 @@ db.send = function (data, collection_name,collection_verb, callback) {
                 console.log('successful')
                 callback(true,   await promise)
             } catch (err) {
-                console.error(err)
-                callback(false,promise)
+                console.log("encouned error")
+                callback(false,err)
             } finally {
                 await cleint.close();
             }
