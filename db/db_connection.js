@@ -7,7 +7,7 @@ const { MongoClient } = require('mongodb');
 require('dotenv').config()
 const { CONNEECTION_STRING, DB_NAME, COLLECTION_NAME, INDEX_NAME } = process.env;
 const util = require('../lib/utils')
-const {ObjectId} = require('mongodb')
+const { ObjectId } = require('mongodb')
 
 
 
@@ -44,22 +44,22 @@ util.checkIfIndexExist(db_name, collection_name, index_name, cleint, function (i
  * @param collection_verb
  */
 
-db.send = function (data, collection_name,collection_verb, callback) {
-   
+db.send = function (data, collection_name, collection_verb, callback) {
 
-    var verb = typeof collection_verb == 'string' && ['insertOne', 'insertMany', 'findOne', 'find', 'updateOne', 'updateMany', 'deleteOne', 'deleteMany','aggregate'].indexOf(collection_verb) > -1 ? collection_verb.trim() : false;
-   
-   
+
+    var verb = typeof collection_verb == 'string' && ['insertOne', 'insertMany', 'findOne', 'find', 'updateOne', 'updateMany', 'deleteOne', 'deleteMany', 'aggregate'].indexOf(collection_verb) > -1 ? collection_verb.trim() : false;
+
+
     if (verb) {
         const send = async () => {
             try {
                 await connectToAtlasCluster();
-               var promise =   util.queryGenerator(cleint, db_name, collection_name, collection_verb, data);
+                var promise = util.queryGenerator(cleint, db_name, collection_name, collection_verb, data);
                 console.log('successful')
-                callback(true,   await promise)
+                callback(true, await promise)
             } catch (err) {
                 console.log("encouned error")
-                callback(false,err)
+                callback(false, err)
             } finally {
                 await cleint.close();
             }
@@ -71,6 +71,18 @@ db.send = function (data, collection_name,collection_verb, callback) {
     }
 
 
+}
+
+
+db.userHasPosts = function (data, callback) {
+    db.send(data, "posts", "find", function (userHasPosts, promise) {
+        if (userHasPosts && promise) {
+            callback(true)
+        } else {
+            callback(false)
+        }
+
+    });
 }
 
 
