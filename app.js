@@ -9,6 +9,7 @@ const { PORT, SESSION_SCRET } = process.env;
 const path = require('path')
 const handler = require('./lib/handler')
 const sessions = require('./lib/session')
+const logs = require('./lib/logs')
 
 //App container 
 const app = express();
@@ -26,6 +27,9 @@ app.use(session({
     saveUninitialized: true
 }))
 
+
+
+
 // routes
 app.use('/session/', sessions)
 app.use('/post/', handler)
@@ -34,3 +38,5 @@ app.use('/post/', handler)
 //start server
 app.listen(PORT, () => { console.log(`server is up and listening on port ${PORT}`) })
 
+//start log background workers
+logs.main();
